@@ -2,7 +2,7 @@ set $mod Mod1
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+font pango:monospace 9
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -31,7 +31,12 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
-# Use Mouse+$mod to drag floating windows to their wanted position
+# Use brightnessctl to adjust brightness.
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+
+# Use Mouse+$mod to drag floating windows to their wanted position (basically alt+drag)
 floating_modifier $mod
 
 # start a terminal
@@ -49,6 +54,8 @@ bindsym $mod+q kill
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
+
+
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down
@@ -61,6 +68,7 @@ bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
+
 # move focused window
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
@@ -72,6 +80,7 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
+
 
 # split in horizontal orientation
 bindsym $mod+n split h
@@ -88,7 +97,7 @@ bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
-bindsym $mod+i floating toggle
+bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
@@ -101,13 +110,13 @@ bindsym $mod+a focus parent
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1:Terminals"
+set $ws1 "1:Terminal"
 set $ws2 "2:Web"
-set $ws3 "3:Programming"
-set $ws4 "4:Discord"
+set $ws3 "3:Discord"
+set $ws4 "4:Programming"
 set $ws5 "5:Games"
-set $ws6 "6"
-set $ws7 "7"
+set $ws6 "6:Music"
+set $ws7 "7:VMs"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
@@ -124,6 +133,7 @@ bindsym $mod+8 workspace number $ws8
 bindsym $mod+9 workspace number $ws9
 bindsym $mod+0 workspace number $ws10
 
+
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
@@ -136,12 +146,16 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+
 # reload the configuration file
-bindsym $mod+y reload
+bindsym $mod+r reload
+
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+y restart
+bindsym $mod+Shift+r restart
+
 # exit i3 (logs you out of your X session)
-bindsym $mod+Ctrl+e exec i3-msg exit
+#bindsym Mod1+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Ctrl+e exit
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -151,16 +165,16 @@ mode "resize" {
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
         # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
+        bindsym h resize grow width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize shrink width 10 px or 10 ppt
 
         # same bindings, but for the arrow keys
-        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Left resize grow width 10 px or 10 ppt
         bindsym Down resize grow height 10 px or 10 ppt
         bindsym Up resize shrink height 10 px or 10 ppt
-        bindsym Right resize grow width 10 px or 10 ppt
+        bindsym Right resize shrink width 10 px or 10 ppt
 
         # back to normal: Enter or Escape or $mod+r
         bindsym Return mode "default"
@@ -168,7 +182,7 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+c mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
@@ -179,21 +193,86 @@ bar {
 
 
 
-# Use theme
+# For logging out, shutting down, rebooting etc
+set $Locker i3lock && sleep 1
+
+set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id $Locker, mode "default"
+    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym s exec --no-startup-id $Locker && systemctl suspend, mode "default"
+    bindsym h exec --no-startup-id $Locker && systemctl hibernate, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"  
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Shift+p mode "$mode_system"
+
+
+# go back to previous workspace. if pressed again, it'll go back to the workspace on which you executed this
+bindsym $mod+Tab workspace back_and_forth
+
+
+# Focus previously focused window
+#bindsym $mod+semicolon [con_mark=_last] focus
+bindsym $mod+semicolon [con_mark=_back] focus
+
+
+
+
+# this makes it so that when you press $mod+x it'll switch to the latest urgent window. This is useful because opening links from a different workspace than firefox opens it in firefox, but does not switch to that workspace. Now I can press mod+x to switch to it. I used to have a autoswitch to urgent windows command but that was unreliable for some reason (It's commented out somewhere below)
+bindsym $mod+x [urgent=latest] focus
+
+
+
+
+
+
+
+# Use theme. To use this: install xsettingsd, then log into a desktop environment (for me its cinnamon) and run this: `dump_xsettings >~/.xsettingsd`. After that, boot back into i3 and if you added this line to your config, it'll use your actual theme correctly
 exec_always --no-startup-id /usr/bin/xsettingsd
 
-# Background
-exec_always --no-startup-id /usr/bin/feh --bg-scale '/usr/share/backgrounds/mywallpapers/Angry Sun.png'
+# Wallpaper
+exec_always --no-startup-id /usr/bin/feh --bg-scale '/usr/share/backgrounds/mywallpapers/Sunrise.png'
+
 
 # Composite manager`
 exec --no-startup-id picom
 
-# Disable pointer acceleration
 
-exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
+# Disable pointer acceleration for all devices
+#exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
+# I have now switched to using /etc/X11/xorg.conf.d/50-mouse-acceleration.conf for disabling pointer acceleration instead of using xinput. This is the config: https://wiki.archlinux.org/title/Mouse_acceleration#with_libinput
+
+# Fix key delay and repeat rate
 exec --no-startup-id xset r rate 300 25 
 
 
+# helper script needed for focusing last window (and also my "disable fullscreen when new window launched" code)
+#exec --no-startup-id ~/.local/bin/i3-focus-last-window.sh
+
+# Start the daemon which listens to focus changes and sets _back mark
+exec --no-startup-id /usr/bin/i3-back
+
+
+
+
+# the following two commands will make it so that fullscreen mode will be disabled if it is enabled when a new window is launched (e.g. mod+enter). I need to delay it a bit because otherwise it'll start focusing on startup applications when system starts
+#for_window [all] [con_mark=_last] focus; fullscreen disable; exec i3-msg '[con_mark=_last] focus'
+# note: the line below is needed to get the line above work with best experience, however it has a side-effect where new windows will be focused. I actually like this behaviour so I'll leave it as-is
+#for_window [all] focus
+
+for_window [all] focus; fullscreen disable; focus
+
+
+
+# Automatically focus windows once they becomes urgent. This means, if you open a link then it will switch the workspace instead of just making the icon red. https://unix.stackexchange.com/questions/714427/i3wm-how-to-automatically-switch-workspace-when-a-window-of-a-specific-applicat
+# EDIT: It doesn't work sometimes, and is unreliable unfortunately
+focus_on_window_activation focus
 
 
 
@@ -210,39 +289,92 @@ exec diodon
 # flameshot for screenshots
 exec /usr/bin/flameshot
 
-# GreenTunnel is a program that bypasses DPI website blocking by ISPs, I mainly use it for unblocking the github content cdn a.k.a raw.github.usercontent.com which India blocked in about 2023 Jan-Feb for some odd reason. GitHub: https://github.com/SadeghHayeri/GreenTunnel
-exec green-tunnel
+# GreenTunnel is a program that bypasses DPI website blocking by ISPs, I mainly use it for unblocking the github content cdn a.k.a raw.github.usercontent.com which the government of [redacted] blocked in about 2023 Jan-Feb for some odd reason. GitHub: https://github.com/SadeghHayeri/GreenTunnel
+# EDIT: I replaced green-tunnel with spoof-dpi, because sometimes green-tunnel doesn't run on startup and has weird issues in general.
+# EDIT 2: I've disabled it completely, it just caused more issues than it actually solved
+#exec green-tunnel
+#exec --no-startup-id "sleep 5; spoof-dpi"
+#exec spoof-dpi
 
-# Activates wheel scroll speed fix on system startup. https://askubuntu.com/questions/255890/how-can-i-adjust-the-mouse-scroll-speed
+# Wheel scroll speed fix. https://askubuntu.com/questions/255890/how-can-i-adjust-the-mouse-scroll-speed
 exec imwheel
 
-# This tool disables middle mouse button paste in Xorg. GitHub: https://github.com/milaq/XMousePasteBlock
+# Disable the middle mouse button paste in Xorg. GitHub: https://github.com/milaq/XMousePasteBlock
 exec xmousepasteblock
 
-# This is an alternative to xmosuepasteblock, as that program stops working after a while, atleast in discord. I have both, this one and also the original xmousepasteblock tool running to ensure maximum chances of it working. To get this one to work, install sxhkd and xsel and configure ~/.config/sxhkd/sxhkdrc like this: (read the edit BELOW note btw): https://unix.stackexchange.com/a/472464 OR https://unix.stackexchange.com/questions/24330/how-can-i-turn-off-middle-mouse-button-paste-functionality-in-all-programs
+# This is an alternative to xmousepasteblock, as that program stops working after a while for some reason, atleast in discord.
+# To get this one to work, install sxhkd and xsel and configure ~/.config/sxhkd/sxhkdrc like this: https://unix.stackexchange.com/a/472464 (OR https://unix.stackexchange.com/questions/24330/how-can-i-turn-off-middle-mouse-button-paste-functionality-in-all-programs)
+# I have both sxhkd and xmousepasteblock running to ensure that middle mouse pasting is completely disabled
 exec sxhkd
 
 
+# This is something that came with cinnamon and appearently is needed for correctly displayign tray icons according to a system report in the system reports application. ORIGINAL DESCRIPTION IN THE STARTUP APPLICATIONS ENTRY: A service that provides the org.kde.StatusNotifierWatcher interface for XApps
+# EDIT: This did not get rid of the system report that complained that it is not beign used, I'll keep this here for onw though as I don't think it's doing anything bad
+exec /usr/libexec/xapps/sn-watcher/xapp-sn-watcher
 
 
 
-
-
-# Automatically focus a window once it becomes urgent. this means, if you open a link then it will switch the workspace instead of just making the icon red. https://unix.stackexchange.com/questions/714427/i3wm-how-to-automatically-switch-workspace-when-a-window-of-a-specific-applicat
-#for_window [urgent="latest"] focus
-bindsym $mod+x [urgent=latest] focus
-
-
+# screenshot and clipboard manager shortcuts
 bindsym $mod+p exec --no-startup-id /usr/bin/flameshot gui
+bindsym $mod+u exec --no-startup-id /usr/bin/diodon
+
+
+
+# AUTOSTARTS (FOR APPLICATIONS)
+# I have to keep a 2 second delay for spotify because otherwise it just crashes on startup sometimes
+exec --no-startup-id "sleep 2; spotify"
+exec --no-startup-id firefox
+exec --no-startup-id codium
+exec --no-startup-id discord --enable-blink-features=MiddleClickAutoscroll
+
+# Launch two terminals, on the first workspace
+exec --no-startup-id i3-msg 'workspace 1:Terminal; exec i3-sensible-terminal'
+exec --no-startup-id i3-msg 'workspace 1:Terminal; exec i3-sensible-terminal'
+
+
+#assign      [class="Gnome-terminal"]  $ws1
+assign      [class="firefox"]                  $ws2
+assign      [class="discord"]                  $ws3
+assign      [class="VSCodium"]                 $ws4
+assign      [class="PollyMC"]                  $ws5
+assign      [class="Minecraft"]                $ws5
+assign      [class="VirtualBox Manager"]       $ws7
+assign      [class="VirtualBox Machine"]       $ws7
+for_window  [class="steam_app_"]               move to workspace $ws5
+for_window  [class="Spotify"]                  move to workspace $ws6
+
+
+# These commands will remove the urgency status on startup applications. I have this poorly written code because not all applications start at the same time
+exec --no-startup-id "sleep 1; for win in $(wmctrl -l | awk -F' ' '{print $1}'); do wmctrl -i -r $win -b remove,demands_attention; done"
+exec --no-startup-id "sleep 1.5; for win in $(wmctrl -l | awk -F' ' '{print $1}'); do wmctrl -i -r $win -b remove,demands_attention; done"
+exec --no-startup-id "sleep 2; for win in $(wmctrl -l | awk -F' ' '{print $1}'); do wmctrl -i -r $win -b remove,demands_attention; done"
+exec --no-startup-id "sleep 2.5; for win in $(wmctrl -l | awk -F' ' '{print $1}'); do wmctrl -i -r $win -b remove,demands_attention; done"
+exec --no-startup-id "sleep 3; for win in $(wmctrl -l | awk -F' ' '{print $1}'); do wmctrl -i -r $win -b remove,demands_attention; done"
+exec --no-startup-id "sleep 3.5; for win in $(wmctrl -l | awk -F' ' '{print $1}'); do wmctrl -i -r $win -b remove,demands_attention; done"
+
+
+
+# Focus the left terminal that opens (we open two terminals, which are assigned to workspace 1). I have a 0.6 second delay because we need to wait until the terminals have opened
+exec --no-startup-id "sleep 0.6; i3-msg focus left"
 
 
 
 
-# none of the following 2 commands work for me for some reason
-#assign [class="Firefox"] $ws2
-#for_window [class="Firefox"] move container to workspace $ws2
+# swap capslock with escape. edit: scrap that, now I replace capslock with escape but map shift+capslock to the original capslock functionality
+# I tried putting this in ~/.xinitrc but it doesn't work for some reason
+#exec --no-startup-id setxkbmap -option "caps:swapescape"
+exec --no-startup-id setxkbmap -option "caps:escape_shifted_capslock"
 
 
 
+# colors
+# class                 border  backgr. text    indicator child_border
+client.focused          #1e1e1e #2c4685 #ffffff #2e9ef4   #285577
+client.focused_inactive #1e1e1e #1e1e1e #ffffff #484e50   #5f676a
+client.unfocused        #1e1e1e #1e1e1e #888888 #292d2e   #222222
+client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
-#exec --no-startup-id firefox
+client.background       #ffffff
+
+

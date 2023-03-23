@@ -155,7 +155,8 @@ bindsym $mod+Shift+r restart
 
 # exit i3 (logs you out of your X session)
 #bindsym Mod1+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Ctrl+e exit
+# EDIT: I commented this out because I kept pressing it by mistake. I have switch to using $mod+Shift+p (see later in the code) for logging out, shutting down, rebooting, etc.
+#bindsym $mod+Ctrl+e exit
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -188,7 +189,15 @@ bindsym $mod+c mode "resize"
 # finds out, if available)
 bar {
         status_command i3status
+        # these below are deprecated appearently, i3 recommends to nop button4 and button5 (see below). EDIT: Those did not work, so I have to do it in this way unfortunately
+        wheel_up_cmd nop
+        wheel_down_cmd nop
 }
+
+
+# disables scrolling on bar. EDIT: These did not work, so I have to do it in the deprecated way above unfortunately
+#bindsym button4 nop
+#bindsym button5 nop
 
 
 
@@ -234,10 +243,10 @@ bindsym $mod+x [urgent=latest] focus
 
 
 # Use theme. To use this: install xsettingsd, then log into a desktop environment (for me its cinnamon) and run this: `dump_xsettings >~/.xsettingsd`. After that, boot back into i3 and if you added this line to your config, it'll use your actual theme correctly
-exec_always --no-startup-id /usr/bin/xsettingsd
+exec --no-startup-id /usr/bin/xsettingsd
 
 # Wallpaper
-exec_always --no-startup-id /usr/bin/feh --bg-scale '/usr/share/backgrounds/mywallpapers/Sunrise.png'
+exec --no-startup-id /usr/bin/feh --bg-scale '/usr/share/backgrounds/mywallpapers/Sunrise.png'
 
 
 # Composite manager`
@@ -288,6 +297,9 @@ exec diodon
 
 # flameshot for screenshots
 exec /usr/bin/flameshot
+#exec 'i3-msg wine "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\ShareX\ShareX.lnk"'
+
+
 
 # GreenTunnel is a program that bypasses DPI website blocking by ISPs, I mainly use it for unblocking the github content cdn a.k.a raw.github.usercontent.com which the government of [redacted] blocked in about 2023 Jan-Feb for some odd reason. GitHub: https://github.com/SadeghHayeri/GreenTunnel
 # EDIT: I replaced green-tunnel with spoof-dpi, because sometimes green-tunnel doesn't run on startup and has weird issues in general.
@@ -316,7 +328,7 @@ exec /usr/libexec/xapps/sn-watcher/xapp-sn-watcher
 
 # screenshot and clipboard manager shortcuts
 bindsym $mod+p exec --no-startup-id /usr/bin/flameshot gui
-bindsym $mod+u exec --no-startup-id /usr/bin/diodon
+bindsym $mod+y exec --no-startup-id /usr/bin/diodon
 
 
 

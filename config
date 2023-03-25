@@ -1,4 +1,7 @@
-set $mod Mod1
+# I have super/win as my mod key, and I have mapped alt to win/super later using setxkbmap later
+# I do this because I just want to dedicate the alt key to i3wm and i3wm only, and prevent applications from using it for things such as menu acceleration (you press alt, the menu gets focused), and other stuff that can't be disabled easily
+# Note: since I've swapped win with alt (later in the code with setxkbmap), you can still use the original alt behaviour by using the win key
+set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -40,7 +43,8 @@ bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+#bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+q kill
@@ -224,6 +228,8 @@ bindsym $mod+Shift+p mode "$mode_system"
 
 # go back to previous workspace. if pressed again, it'll go back to the workspace on which you executed this
 bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+Escape workspace back_and_forth
+# Note: I have capslock bound to escape, so I can press mod+tab or mod+capslock to go back and forth between previous workspace and current
 
 
 # Focus previously focused window
@@ -340,8 +346,8 @@ exec --no-startup-id codium
 exec --no-startup-id discord --enable-blink-features=MiddleClickAutoscroll
 
 # Launch two terminals, on the first workspace
-exec --no-startup-id i3-msg 'workspace 1:Terminal; exec i3-sensible-terminal'
-exec --no-startup-id i3-msg 'workspace 1:Terminal; exec i3-sensible-terminal'
+exec --no-startup-id i3-msg 'workspace 1:Terminal; exec alacritty'
+exec --no-startup-id i3-msg 'workspace 1:Terminal; exec alacritty'
 
 
 #assign      [class="Gnome-terminal"]  $ws1
@@ -374,8 +380,18 @@ exec --no-startup-id "sleep 0.6; i3-msg focus left"
 
 # swap capslock with escape. edit: scrap that, now I replace capslock with escape but map shift+capslock to the original capslock functionality
 # I tried putting this in ~/.xinitrc but it doesn't work for some reason
-#exec --no-startup-id setxkbmap -option "caps:swapescape"
-exec --no-startup-id setxkbmap -option "caps:escape_shifted_capslock"
+####exec --no-startup-id setxkbmap -option "caps:swapescape"
+####exec --no-startup-id setxkbmap -option "caps:escape_shifted_capslock"
+
+# remap alt to win. I use win as my mod key for i3.
+####exec --no-startup-id setxkbmap -option "altwin:swap_alt_win"
+
+# remap AltGr to RAlt. This is similar to what I did on windows using sharpkeys
+####exec --no-startup-id setxkbmap -option "grp:rswitch"
+
+#### EDIT: I have replaced those commands above with this. You don't have to add this command below to your startup script, because it is persistent. This is better to use because setxkbmap won't work if your keyboard is connected after linux has booted or whatever
+####localectl set-x11-keymap us '' '' caps:escape_shifted_capslock,altwin:swap_alt_win,grp:rswitch
+# note: you have to restart your computer for that command above to work!
 
 
 

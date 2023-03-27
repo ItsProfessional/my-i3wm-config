@@ -260,8 +260,13 @@ exec --no-startup-id picom
 
 
 # Disable pointer acceleration for all devices
-#exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
+#exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id "libinput Tapping Enabled" 1; done
 # I have now switched to using /etc/X11/xorg.conf.d/50-mouse-acceleration.conf for disabling pointer acceleration instead of using xinput. This is the config: https://wiki.archlinux.org/title/Mouse_acceleration#with_libinput
+
+
+# Enable touchpad tapping for all devices
+#exec_always for id in $(xinput list | grep "pointer" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id 'libinput Accel Profile Enabled' 0, 1; done
+# I have now switched to using /etc/X11/xorg.conf.d/touchpad-tap.conf for enabling touchpad tapping instead of using xinput. This is the config: https://major.io/2021/07/18/tray-icons-in-i3/
 
 # Fix key delay and repeat rate
 exec --no-startup-id xset r rate 300 25 
@@ -288,6 +293,11 @@ for_window [all] focus; fullscreen disable; focus
 # Automatically focus windows once they becomes urgent. This means, if you open a link then it will switch the workspace instead of just making the icon red. https://unix.stackexchange.com/questions/714427/i3wm-how-to-automatically-switch-workspace-when-a-window-of-a-specific-applicat
 # EDIT: It doesn't work sometimes, and is unreliable unfortunately
 focus_on_window_activation focus
+
+
+# don't switch to window when hovering over it
+focus_follows_mouse no
+
 
 
 
@@ -358,7 +368,7 @@ assign      [class="PollyMC"]                  $ws5
 assign      [class="Minecraft"]                $ws5
 assign      [class="VirtualBox Manager"]       $ws7
 assign      [class="VirtualBox Machine"]       $ws7
-for_window  [class="steam_app_"]               move to workspace $ws5
+for_window  [class="steam_app_"]               move to workspace $ws5; workspace number $ws5
 for_window  [class="Spotify"]                  move to workspace $ws6
 
 

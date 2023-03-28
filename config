@@ -276,8 +276,8 @@ exec --no-startup-id picom
 
 
 # Slow down scrolling speed on touchpad (2 finger scrolling)
-#exec_always for id in $(xinput list | grep "Touchpad" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id "libinput Scrolling Pixel Distance" 30; done
-# I have now switched to using /etc/X11/xorg.conf.d/40-touchpad.conf for enabling touchpad tapping instead of using xinput. This is the config: https://major.io/2021/07/18/tray-icons-in-i3/
+exec_always for id in $(xinput list | grep "Touchpad" | cut -d '=' -f 2 | cut -f 1); do xinput --set-prop $id "libinput Scrolling Pixel Distance" 30; done
+# I tried to find use this in /etc/X11/xorg.con.d/40-touchpad.conf but it didn't work for some reason
 
 
 
